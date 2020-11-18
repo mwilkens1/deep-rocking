@@ -5,9 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class CNN_trainer():
+    """
+    Class for loading the images, training a CNN model, plotting scores and 
+    testing the model. This is applied to a dataset of electric guitar images 
+    from Reverb.com
+    """
 
     def __init__(self):
-        self.classes = ['jazzmaster','lespaul', 'mustang', 'prs_se', 'SG','stratocaster','telecaster']
+        self.classes = ['jazzmaster','lespaul', 'mustang', 'prs_se', 'SG',
+                        'stratocaster','telecaster']
         self.train_on_gpu = torch.cuda.is_available()
         self.criterion = None
         self.optimizer = None
@@ -19,17 +25,40 @@ class CNN_trainer():
             print('CUDA is available!  Training on GPU ...')
 
     def get_loaders(self, batch_size, train_transforms, test_transforms):
-        train_data = datasets.ImageFolder('data/train', transform=train_transforms)
-        validation_data = datasets.ImageFolder('data/validation', transform=test_transforms)
-        test_data = datasets.ImageFolder('data/test', transform=test_transforms)
+        """
+        Creates loaders for training, validation and testing data
+        
+        batch size - integer
+        train transforms - transforms object for the training data
+        test transforms - transforms object for the validation and testing data
+        
+        """
 
-        self.train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
-        self.valid_loader = torch.utils.data.DataLoader(validation_data, batch_size=batch_size, shuffle=True)
-        self.test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True)
+        train_data = datasets.ImageFolder('data/train', 
+                                            transform=train_transforms)
+        validation_data = datasets.ImageFolder('data/validation', 
+                                            transform=test_transforms)
+        test_data = datasets.ImageFolder('data/test', 
+                                            transform=test_transforms)
+
+        self.train_loader = torch.utils.data.DataLoader(train_data, 
+                                        batch_size=batch_size, shuffle=True)
+        self.valid_loader = torch.utils.data.DataLoader(validation_data, 
+                                        batch_size=batch_size, shuffle=True)
+        self.test_loader = torch.utils.data.DataLoader(test_data, 
+                                        batch_size=batch_size, shuffle=True)
 
         self.batch_size = batch_size
 
     def set_model(self, model, path):
+        """
+        Defines the model
+        
+        'Model' is the actual CNN
+        'path'  is a string for the location (and name) where the best model is
+                stored
+        
+        """
         self.model = model
 
         if self.train_on_gpu:
@@ -38,6 +67,15 @@ class CNN_trainer():
         self.model_path = path
 
     def train_model(self,max_epochs, stop_at, stopping_criterion):
+        """
+        Trains the model and keeps score 
+        
+        max_epochs - int
+        stop_at - integer of the number of epochs that the model will continue
+                  to run without improvement less than the stopping criterion
+        stopping_criterion - float
+        
+        """
 
         epoch_count = []
         train_loss_list = []
@@ -127,12 +165,14 @@ class CNN_trainer():
             valid_acc_list.append(valid_acc)
             
             # save model if validation loss has decreased
-            if valid_loss_min - valid_loss > stopping_criterion :
+            if  valid_loss < valid_loss_min:
                 print('\t\tValidation loss decreased ({:.3f} --> {:.3f}).  Saving model ...'.format(
                 valid_loss_min,
                 valid_loss))
                 torch.save(self.model.state_dict(), self.model_path)
                 valid_loss_min = valid_loss
+
+            if  valid_loss_min - valid_loss > stopping_criterion :
                 stopper = 0
             else:
                 print('\t\tDecrease in validation loss less than {}'.format(stopping_criterion))
@@ -144,6 +184,11 @@ class CNN_trainer():
                         'valid loss': valid_loss_list, 'valid accuracy': valid_acc_list}
 
     def plot_scores(self):
+        '''Plots the loss and accuracy by epochs ''' 
+
+        accuracy_scores = []
+        for x in self.scores['valid accuracy']:
+            accuracy_scores.append(x[0])
 
         plt.figure(figsize=(10, 4))
         
@@ -154,13 +199,14 @@ class CNN_trainer():
         plt.title('Loss in validation set')
 
         plt.subplot(1,2,2)
-        plt.plot(self.scores['epochs'], self.scores['valid accuracy'])
+        plt.plot(self.scores['epochs'], accuracy_scores)
         plt.title('Accuracy in validation set')
 
         plt.tight_layout()
         plt.show()
 
     def test_model(self):
+        '''Prints loss and accuracy on testing set'''
 
         # Load best model
         self.model.load_state_dict(torch.load(self.model_path))

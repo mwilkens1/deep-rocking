@@ -120,13 +120,18 @@ class CNN_trainer():
                 # update training loss
                 train_loss += loss.item()*data.size(0)
                 # Print progress 
-                print('\r Epoch: {} \t{:.2f}% completed'.format(epoch, batch/len(self.train_loader)*100), end='')
+                print('\r Epoch: {} \tTraining \t{:.2f}% completed'.format(epoch, batch/len(self.train_loader)*100), end='')
                 
             ######################    
             # validate the model #
             ######################
+
+            batch = 0
+
             self.model.eval()
             for data, target in self.valid_loader:
+
+                batch+=1
                 # move tensors to GPU if CUDA is available
                 if self.train_on_gpu:
                     data, target = data.cuda(), target.cuda()
@@ -147,6 +152,11 @@ class CNN_trainer():
                         label = target.data[i]
                         class_correct[label] += correct[i].item()
                         class_total[label] += 1
+                        
+                if batch==1:
+                    print('\n \t\tValidation \t{:.2f}% completed'.format(batch/len(self.valid_loader)*100), end='')
+                else:
+                    print('\r \t\tValidation \t{:.2f}% completed'.format(batch/len(self.valid_loader)*100), end='')
             
             # calculate average losses
             train_loss = train_loss/len(self.train_loader.sampler)
@@ -164,22 +174,30 @@ class CNN_trainer():
             valid_loss_list.append(valid_loss)
             valid_acc_list.append(valid_acc)
             
-            # save model if validation loss has decreased
+            # if loss has decreased
             if  valid_loss < valid_loss_min:
+                      
                 print('\t\tValidation loss decreased ({:.3f} --> {:.3f}).  Saving model ...'.format(
                 valid_loss_min,
                 valid_loss))
                 torch.save(self.model.state_dict(), self.model_path)
-                valid_loss_min = valid_loss
+                
+                # ... by more than the stopping criterion
+                if valid_loss_min - valid_loss > stopping_criterion:
+                    stopper = 0 #reset the counter
+                
+            # If no decrease in loss, or no larger than the stopping criterion
+            if valid_loss >= valid_loss_min or valid_loss_min - valid_loss <= stopping_criterion:
+                stopper += 1 #counter +1
 
-            if  valid_loss_min - valid_loss > stopping_criterion :
-                stopper = 0
-            else:
-                print('\t\tDecrease in validation loss less than {}'.format(stopping_criterion))
-                stopper += 1
+                print('\t\tDecrease in validation loss less than {} ({})'.format(stopping_criterion, stopper))
+
                 if stopper==stop_at:
                     break
-        
+            
+            if valid_loss < valid_loss_min:
+                valid_loss_min = valid_loss
+            
         self.scores = {'epochs': epoch_count,'train loss': train_loss_list, 
                         'valid loss': valid_loss_list, 'valid accuracy': valid_acc_list}
 

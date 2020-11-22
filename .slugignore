@@ -3,10 +3,9 @@ __pycache__
 .gitattributes
 envs
 data
-model.pkl
-model.pt
+model_vgg16.pt
 model_vgg16.pkl
 train_model.ipynb
 get_images.ipynb
 create_datasets.ipynb
-CNN_trainier.py
+CNN_trainer.py

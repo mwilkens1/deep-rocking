@@ -3,5 +3,5 @@ __pycache__
 .gitattributes
 envs
 data
-*.pt
+model_vgg16.pt
 *.pkl

@@ -5,7 +5,7 @@ attrs==20.3.0
 babel==2.9.0
 backcall==0.2.0
 beautifulsoup4==4.9.3
-blas==1
+blas==1.0
 bleach==3.2.1
 brotlipy==0.7.0
 ca-certificates==2020.11.8

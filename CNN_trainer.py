@@ -3,6 +3,7 @@ from torchvision import datasets, transforms
 import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 class CNN_trainer():
     """
@@ -56,7 +57,8 @@ class CNN_trainer():
         
         'Model' is the actual CNN
         'path'  is a string for the location (and name) where the best model is
-                stored
+                stored (without extension). Will save the pt file and the model
+                definition as a pickle
         
         """
         self.model = model
@@ -65,6 +67,9 @@ class CNN_trainer():
             self.model.cuda()
 
         self.model_path = path
+
+        with open(path + '.pkl', 'wb') as file:
+            pickle.dump(model, file)
 
     def train_model(self,max_epochs, stop_at, stopping_criterion):
         """
@@ -178,7 +183,7 @@ class CNN_trainer():
                 print('\t\tValidation loss decreased ({:.3f} --> {:.3f}).  Saving model ...'.format(
                 valid_loss_min,
                 valid_loss))
-                torch.save(self.model.state_dict(), self.model_path)
+                torch.save(self.model.state_dict(), self.path + '.pt')
                 
                 # ... by more than the stopping criterion
                 if valid_loss_min - valid_loss > stopping_criterion:

@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <title>Guitar predictor</title>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="../static/css/side_style.css">
+
+</head>
+
+
+<body>
+  <div class="row" style="margin-left: 50px; margin-right: 50px; margin-bottom:10px; margin-top: 10px; ">
+    <input style="width: 80%" type="text" class="form-control form-control-lg change_image" name="url"
+      placeholder="Enter link to image of electric guitar">
+    <button style="width: 20%" type="submit" class="btn btn-lg btn-success">Predict type</button>
+  </div>
+  
+  <div class="row justify-content-center">
+    <div id="image"></div>
+  </div>
+
+  <div class="row justify-content-center" >
+    
+    <h4 style="margin-right:4px;"> This is a: </h4>
+    <h4 id="predicted_class"></h4>
+
+  </div>
+
+<script>
+
+  var predicted_class = {{ predicted_class | safe}};
+
+  document.getElementById("predicted_class").innerHTML = predicted_class;
+
+  var image = {{ image | safe}};
+
+  document.getElementById("image").innerHTML = `<img src="${image}" height="250" >`; 
+
+ 
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script>
+
+  
+
+    // This gets the image and returns the prediction
+    $('.change_image').change(function () {
+
+      $.getJSON({
+        url: "/change_image",
+        data: { 'url': $("input[name='url']").val() },
+        success: function (data) {
+
+          document.getElementById("predicted_class").innerHTML = data[1];
+          document.getElementById("image").innerHTML = `<img src="${data[0]}" height="250" >`;
+
+        }
+      });
+
+    });
+
+</script>
+
+</body>
+</html>

@@ -4,3 +4,4 @@ __pycache__
 envs
 data
 *.pt
+*.pkl

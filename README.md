@@ -11,7 +11,7 @@
 
 ## Installation <a name="installation"></a>
 
-There should be no necessary libraries to run the code here beyond the Anaconda distribution of Python. The code should run with no issues using Python version 3. The final app is live on [deep-rocking.herokuapps.com](deep-rocking.herokuapps.com)
+There should be no necessary libraries to run the code here beyond the Anaconda distribution of Python. The code should run with no issues using Python version 3. The final app is live on [deep-rocking.herokuapps.com](https://deep-rocking.herokuapps.com)
 
 ## Project Motivation<a name="motivation"></a>
 This project is for me to practice with convolutional neural networks using pytorch. I am applying this technique to a personal interest of mine: guitars. The goal is to build a model that can classify images of guitars into 7 main electric guitar body types: stratocaster, telecaster, les paul, mustang, jazzmaster, PRS SE and the SG. This task should be fairly straightforward because the difference in guitar bodies is quite obvious, although the differences between some bodies are much more subtle. In the future, the application could potentially be improved by giving more precise estimates, i.e. not only the guitar body type but the exact model, the brand and the year in which it was produced. 
@@ -28,7 +28,7 @@ The images have been collected from Reverb.com, a website with listings for new 
 ## Results<a name="results"></a>
 With 7 classes the random probability of getting a class right is just over 14%. The model 'from scratch' gets accuracy in the testing set over 80%, though not for all classes. The transfer learning model gets over 90%.  
 
-The 'from scratch' model is live on [deep-rocking.herokuapps.com](deep-rocking.herokuapps.com). Unfortunately, the VGG16 based model was too big for the free limit on Heroku.
+The 'from scratch' model is live on [deep-rocking.herokuapps.com](https://deep-rocking.herokuapps.com). Unfortunately, the VGG16 based model was too big for the free limit on Heroku.
 
 ## Reflection<a name="reflection"></a>
 Given the accuracy scores, the models work quite well. The classes for which the accuracy is lower are the classes with less images. Including more images for those classes would likely increase accuracy there as well. Further differentiation within classes would be possible, although the differences will become a lot more subtle. What would particulary be a problem in this field are the reissue guitars: modern copies of vintage guitars. These are difficult to distinguish from the vintage ones, but more less expensive. Also, cheaper copies of high quality guitars in general are visually difficult to distinguish. Differences in playability and tone are obviously not captured in images. 

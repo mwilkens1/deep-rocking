@@ -23,7 +23,7 @@ class predict_guitar():
 
         # load parameters
         self.model.load_state_dict(torch.load('model.pt',
-            map_location=map_location))          )
+            map_location=map_location))          
         
         if torch.cuda.is_available():
             self.model.cuda()

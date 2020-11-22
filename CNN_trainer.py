@@ -99,7 +99,9 @@ class CNN_trainer():
             # train the model #
             ###################
             self.model.train()
-                
+
+            print("----------------------------------------------------------------------------")
+
             for data, target in self.train_loader:
 
                 batch+=1
@@ -120,7 +122,7 @@ class CNN_trainer():
                 # update training loss
                 train_loss += loss.item()*data.size(0)
                 # Print progress 
-                print('\r Epoch: {} \tTraining \t{:.2f}% completed'.format(epoch, batch/len(self.train_loader)*100), end='')
+                print('\rEpoch: {} \tTraining \t{:.2f}% completed'.format(epoch, batch/len(self.train_loader)*100), end='')
                 
             ######################    
             # validate the model #
@@ -153,10 +155,7 @@ class CNN_trainer():
                         class_correct[label] += correct[i].item()
                         class_total[label] += 1
                         
-                if batch==1:
-                    print('\n \t\tValidation \t{:.2f}% completed'.format(batch/len(self.valid_loader)*100), end='')
-                else:
-                    print('\r \t\tValidation \t{:.2f}% completed'.format(batch/len(self.valid_loader)*100), end='')
+                    print('\rEpoch: {} \tValidation \t{:.2f}% completed'.format(epoch, batch/len(self.valid_loader)*100), end='')
             
             # calculate average losses
             train_loss = train_loss/len(self.train_loader.sampler)
@@ -165,8 +164,7 @@ class CNN_trainer():
                 np.sum(class_correct), np.sum(class_total))
 
             # print training/validation statistics 
-            print('\n\t\tTraining Loss: {:.3f} \tValidation Loss: {:.3f}'.format(
-                train_loss, valid_loss))
+            print('\rEpoch: {} \tTraining Loss: {:.3f} \tValidation Loss: {:.3f}'.format(epoch,train_loss, valid_loss))
             print('\t\tValidation Accuracy (Overall): %2d%% (%2d/%2d)' % valid_acc)
 
             epoch_count.append(epoch)
